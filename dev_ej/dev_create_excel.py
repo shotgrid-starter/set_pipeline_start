@@ -5,7 +5,7 @@ from openpyxl import Workbook
 from openpyxl.drawing.image import Image
 # from openpyxl.styles.fonts import Font
 
-from convert_thumb import get_thumbnail
+from dev_convert_thumb import get_thumbnail
 
 SCAN_PATH = "/TD/show/hanjin/production/scan/20221017_plate_scan"
 ROOT_PATH = SCAN_PATH.split('/production/scan')
