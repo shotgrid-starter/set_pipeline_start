@@ -19,6 +19,7 @@ class ExcelCreate:
         self._input_path = None
         self.thumbnail_path = None
         self.project_path = None
+        self.excel_path = "/TD/show/hanjin/production/excel"
 
         self.files_dict = {}
 
@@ -77,17 +78,13 @@ class ExcelCreate:
             exr_start_file = OpenEXR.InputFile(exr)
             start_meta = exr_start_file.header()
 
-            lsat = self.last_file_list[i]
-            exr_last_file = OpenEXR.InputFile(lsat)
+            exr_last_file = OpenEXR.InputFile(exr)
             last_meta = exr_last_file.header()
 
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
 
-            res = re.findall(r'\d+\d+', str(start_meta.get("displayWindow")))
+            res = re.findall(r'\d+\d+', str(start_meta.get("dataWindow")))
             resolutions = list(map(lambda x: str(int(x) + 1), res))
-
-            start_timecode = re.search(r"time: (\d+:\d+:\d+:\d+)", str(start_meta.get("timeCode")))
-            last_timecode = re.search(r"time: (\d+:\d+:\d+:\d+)", str(last_meta.get("timeCode")))
 
             frames = re.findall(r'\d+\.\d+|\d+', str(start_meta.get("framesPerSecond")))
 
@@ -96,13 +93,14 @@ class ExcelCreate:
                     "scan_path": file_data.group(1),
                     "scan_name": file_data.group(2),
                     "clip_name": start_meta.get("interim.clip.cameraClipName"),
+                    "pad": '%0' + str(len(file_data.group(3))) + 'd',
                     "ext": file_data.group(4),
                     "resolutions": ' x '.join(resolutions),
                     "start_frame": int(frames[1]),
                     "and_frame": int(frames[0]),
                     "duration": int(frames[0]) - int(frames[1]) + 1,
-                    "timecode_in": start_timecode.group(1),
-                    "timecode_out": last_timecode.group(1),
+                    "timecode_in": start_meta.get("arriraw/timeCode"),
+                    "timecode_out": last_meta.get("arriraw/timeCode"),
                     "framerate": float(frames[2]),
                     "date": start_meta.get("capDate"),
                 }
@@ -145,7 +143,7 @@ class ExcelCreate:
             self.ws.cell(row=row, column=8, value=meta.get("scan_path"))
             self.ws.cell(row=row, column=9, value=meta.get("scan_name"))
             self.ws.cell(row=row, column=10, value=meta.get("clip_name"))
-
+            self.ws.cell(row=row, column=11, value=meta.get("pad"))
             self.ws.cell(row=row, column=12, value=meta.get("ext"))
             self.ws.cell(row=row, column=13, value=meta.get("resolutions"))
             self.ws.cell(row=row, column=14, value=meta.get("start_frame"))
@@ -161,14 +159,14 @@ class ExcelCreate:
         self.excel_save()
 
     def excel_save(self):
-        excel_path = os.path.join(self.project_path[0], 'production/excel')
+        self.excel_path = os.path.join(self.project_path[0], 'production/excel')
 
         file_name = f'{self.project_path[1]}.xlsx'
-        save_dir_path = os.path.join(excel_path, file_name)
+        save_dir_path = os.path.join(self.excel_path, file_name)
         count = 1
         while os.path.exists(save_dir_path):
             new_name = f'{self.project_path[1]}_{count}.xlsx'
-            save_dir_path = os.path.join(excel_path, new_name)
+            save_dir_path = os.path.join(self.excel_path, new_name)
             count += 1
 
         self.wb.save(save_dir_path)

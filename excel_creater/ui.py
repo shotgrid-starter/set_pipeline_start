@@ -1,4 +1,6 @@
 import sys
+import subprocess
+from excel_create import ExcelCreate
 
 # import OpenEXR
 from PySide2.QtWidgets import *
@@ -11,6 +13,7 @@ class CreateExcelView(QWidget):
         super().__init__()
         self.setup_ui()
         # OpenEXR.InputFile('/TD/show/hanjin/production/scan/20221017_plate_scan/001_C140C022_220304_WOFX/C140C022_220304_WOFX.0001001.exr')
+        self.model = ExcelCreate()
 
     def setup_ui(self):
         self.setWindowTitle("Create Excel File")
@@ -41,6 +44,7 @@ class CreateExcelView(QWidget):
         # button clicked event example
         self.btn_browse.clicked.connect(self.browse_test)
         self.btn_create.clicked.connect(self.create_test)
+        self.btn_create.clicked.connect(self.message_box)
         self.btn_cancel.clicked.connect(self.cancel_test)
 
         self.show()
@@ -52,8 +56,14 @@ class CreateExcelView(QWidget):
         self.move(fg.topLeft())
 
     def message_box(self):
-        msgbox = QMessageBox()
-        msgbox.about(self, "Alert", "Complete")
+        msg = QMessageBox()
+        msg.setWindowTitle("Successful")
+        msg.setText("<font size = 3 > Excel Created Complete </font>")
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Open)
+        self.retval = msg.exec_()
+
+        if self.retval == QMessageBox.Open :
+            subprocess.Popen(['gio', 'open', self.model.excel_path])
 
     def browse_test(self):
         print("Select a directory")

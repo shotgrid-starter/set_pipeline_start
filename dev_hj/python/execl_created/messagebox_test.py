@@ -27,12 +27,14 @@ class Dialog(QDialog):
         messagebox.exec_()
         # print('exe: %s  clickedButton: %s'%(exe, messagebox.clickedButton())
 
+        # message = "<font size = 5 > Complete </font>"
+        # messagebox = QMessageBox(QMessageBox.Information, "Successful", message, parent=self)
+        # messagebox.addButton("folder open", QMessageBox.ResetRole)
+        # messagebox.addButton("ok", QMessageBox.ApplyRole)
+        # messagebox.exec_()
+
 
 
 dialog = Dialog()
 dialog.show()
 app.exec_()
-
-./configure
-make
-sudo make install
