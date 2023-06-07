@@ -5,7 +5,7 @@ from PySide2.QtGui import *
 class ConvertView(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('EXR Converter')
+        self.setWindowTitle('Excel Converter')
 
         widget = QWidget()
         layout = QVBoxLayout()
