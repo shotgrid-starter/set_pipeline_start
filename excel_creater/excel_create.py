@@ -93,7 +93,6 @@ class ExcelCreate:
                     "scan_path": file_data.group(1),
                     "scan_name": file_data.group(2),
                     "clip_name": start_meta.get("interim.clip.cameraClipName"),
-                    "pad": '%0' + str(len(file_data.group(3))) + 'd',
                     "ext": file_data.group(4),
                     "resolutions": ' x '.join(resolutions),
                     "start_frame": int(frames[1]),
@@ -123,7 +122,7 @@ class ExcelCreate:
     def execl_form(self):
         header_list = [
             'check', 'thumbnail', 'roll', 'seq_name', 'shot_name', 'version', 'type',
-            'scan_path', 'scan_name', 'clip_name', 'pad', 'ext', 'resoultion',
+            'scan_path', 'scan_name', 'clip_name', 'ext', 'resoultion',
             'start_frame', 'end_frame', 'duration', 'retime_duration', 'retime_percent', 'retime_start_frame',
             'timecode_in', 'timecode_out', 'just_in', 'just_out', 'framerate', 'date', 'clip_tag'
         ]
@@ -143,7 +142,7 @@ class ExcelCreate:
             self.ws.cell(row=row, column=8, value=meta.get("scan_path"))
             self.ws.cell(row=row, column=9, value=meta.get("scan_name"))
             self.ws.cell(row=row, column=10, value=meta.get("clip_name"))
-            self.ws.cell(row=row, column=11, value=meta.get("pad"))
+
             self.ws.cell(row=row, column=12, value=meta.get("ext"))
             self.ws.cell(row=row, column=13, value=meta.get("resolutions"))
             self.ws.cell(row=row, column=14, value=meta.get("start_frame"))
