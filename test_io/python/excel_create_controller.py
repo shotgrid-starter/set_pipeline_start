@@ -1,10 +1,9 @@
 import sys
-print("123")
+import subprocess
+
 from excel_create import ExcelCreate
-print("456")
 from PySide2.QtWidgets import *
 
-# from excel_create import ExcelCreate
 from excel_create_view import CreateExcelView
 
 
@@ -17,6 +16,7 @@ class CreateExcelController(CreateExcelView):
         self.btn_browse.clicked.connect(self.btn_browse_clicked)
         self.btn_clear.clicked.connect(self.btn_clear_clicked)
         self.btn_create.clicked.connect(self.btn_create_clicked)
+        self.btn_create.clicked.connect(self.save_folder_open)
         self.btn_cancel.clicked.connect(self.btn_cancel_clicked)
 
     def btn_browse_clicked(self):
@@ -36,6 +36,10 @@ class CreateExcelController(CreateExcelView):
 
     def btn_cancel_clicked(self):
         self.close()
+
+    def save_folder_open(self):
+        if self.retval == QMessageBox.Open:
+            subprocess.Popen(['gio', 'open', self.model.excel_path])
 
 
 if __name__ == "__main__":

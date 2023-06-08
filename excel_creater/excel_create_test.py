@@ -74,19 +74,19 @@ class ExcelCreater:
             file_name = os.path.splitext(os.path.basename(exr))[0]
             if not os.path.isfile(f'{self.thumbnail_path}/{file_name}.jpg'):
                 ffmpeg.run(output(input(exr), f'{self.thumbnail_path}/{file_name}.jpg'))
-       
+
     def get_meta(self):
         # self.origin_data()
         for i, exr in enumerate(self.first_file_list):
             # print(f"bb=={i}=={exr}")
-        
+
             exr_start_file = OpenEXR.InputFile(exr)
             start_meta = exr_start_file.header()
 
             exr_last_file = OpenEXR.InputFile(exr)
             last_meta = exr_last_file.header()
-            # print(f"333=={start_meta}, 444=={last_meta}")
-            
+            print(f"333=={start_meta}, 444=={last_meta}")
+
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
 
             # 해상도
@@ -109,7 +109,7 @@ class ExcelCreater:
                     "duration": int(frames[0]) - int(frames[1]) + 1,
                     "timecode_in": start_meta.get("arriraw/timeCode"),
                     "timecode_out": last_meta.get("arriraw/timeCode"),
-                    "framerate":  float(frames[2]),
+                    "framerate": float(frames[2]),
                     "date": start_meta.get("capDate"),
                 }
             )
@@ -121,13 +121,13 @@ class ExcelCreater:
             image = Image(os.path.join(self.thumbnail_path, thumbnail_list))
             image.width = 250
             image.height = 150
-            col_width = image.width * 50 / 350   ## 엑셀 셀 폭 높이 단위
+            col_width = image.width * 50 / 350  ## 엑셀 셀 폭 높이 단위
             row_height = image.height * 250 / 300
             self.ws.add_image(image, anchor='B' + str(i + 2))  ## 이미지 삽입
             if i == 0:
                 self.ws.column_dimensions['B'].width = col_width  ## 셀 폭은 한 번만 변경
             self.ws.row_dimensions[i + 2].height = row_height  ## 셀 높이 변경
-            self.ws.cell(row=i + 2, column=2, value=thumbnail_list) ## file_name 입력
+            self.ws.cell(row=i + 2, column=2, value=thumbnail_list)  ## file_name 입력
 
     def execl_form(self):
         header_list = [
@@ -141,7 +141,7 @@ class ExcelCreater:
             self.ws.cell(row=1, column=i + 1, value=title)
 
     def excel_create(self):
-      
+
         self.get_all_files()
         self.get_first_and_last_file()
         self.thumbnail_create()
@@ -181,16 +181,16 @@ class ExcelCreater:
             save_dir_path = os.path.join(excel_path, new_name)
             count += 1
         self.wb.save(save_dir_path)
-        
+
 
 def main():
     ec = ExcelCreater()
 
     # setter test info
     ec.input_path = r"/TD/show/hanjin/production/scan/20221017_plate_scan"
-    
+
     ec.excel_create()
 
-    
+
 if __name__ == '__main__':
     main()
