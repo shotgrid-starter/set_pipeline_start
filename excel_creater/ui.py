@@ -1,6 +1,4 @@
 import sys
-import subprocess
-from excel_create import ExcelCreate
 
 from PySide2.QtWidgets import *
 from PySide2 import QtGui
@@ -11,7 +9,7 @@ class CreateExcelView(QWidget):
     def __init__(self):
         super().__init__()
         self.setup_ui()
-        self.model = ExcelCreate()
+        self.retval = None
 
 
     def setup_ui(self):
@@ -55,7 +53,7 @@ class CreateExcelView(QWidget):
         self.btn_browse.clicked.connect(self.browse_test)
         self.btn_clear.clicked.connect(self.clear_test)
         self.btn_create.clicked.connect(self.create_test)
-        self.btn_create.clicked.connect(self.message_box)
+        # self.btn_create.clicked.connect(self.message_box)
         self.btn_cancel.clicked.connect(self.cancel_test)
 
         self.show()
@@ -72,10 +70,6 @@ class CreateExcelView(QWidget):
         msg.setText("<font size = 3 > Excel Created Complete </font>")
         msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Open)
         self.retval = msg.exec_()
-
-        if self.retval == QMessageBox.Open :
-            subprocess.Popen(['gio', 'open', self.model.excel_path])
-
 
     def browse_test(self):
         print("Select a directory")
