@@ -115,14 +115,22 @@ class ExcelCreater:
             # print(f"jojo=== {self.duration}")
 
             # 시작시간 / 끝시간
-            self.timecode_in = start_meta.get("arriraw/timeCode")
-            self.timecode_out = last_meta.get("arriraw/timeCode")
+            # self.timecode_in = start_meta.get("arriraw/timeCode")
+            # self.timecode_out = last_meta.get("arriraw/timeCode")
             # print(f"tik=== {self.timecode_in}")
             # print(f"tok=== {self.timecode_out}")
+
+            # 시작시간 / 끝시간
+            self.timecode_in = start_meta.get("timeCode")
+            self.timecode_out = last_meta.get("timeCode")
+            print(f"tik=== {self.timecode_in}")
+            print(f"tok=== {self.timecode_out}")
 
             # 생성날짜
             self.date = start_meta.get("capDate")
             # print(f"gogo=== {self.date}")
+
+
 
             self.exr_meta_list.append(
                 {
@@ -200,7 +208,7 @@ def main():
 
     print(f"meta{ec.exr_metadata()}")
 
-    print(f"mack{ec.excel_create()}")
+    # print(f"mack{ec.excel_create()}")
 
 
 if __name__ == '__main__':
