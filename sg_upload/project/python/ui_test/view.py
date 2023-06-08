@@ -1,6 +1,7 @@
 import sys
 from PySide2.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QPushButton, QLabel
 
+
 class MyView(QWidget):
     def __init__(self):
         super().__init__()
@@ -13,17 +14,17 @@ class MyView(QWidget):
         # first_hbox = QHBoxLayout()
         vbox = QVBoxLayout()
 
-        #label
+        # label
         self.label_path = QLabel()
         vbox.addWidget(self.label_path)
         self.label_path.setText('경로에요')
 
-        #"Open" Button
+        # "Open" Button
         self.openButton = QPushButton("Open")
         self.openButton.setMaximumWidth(60)  # 버튼 크기 조정
         vbox.addWidget(self.openButton)
 
-        #Project Combo box
+        # Project Combo box
         # second_hbox = QHBoxLayout()
         self.project = QComboBox()
         vbox.addWidget(self.project)
@@ -58,6 +59,7 @@ def main():
     view = MyView()
     view.show()
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()
