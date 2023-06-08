@@ -9,8 +9,6 @@ class CreateExcelView(QWidget):
     def __init__(self):
         super().__init__()
         self.setup_ui()
-        self.retval = None
-
 
     def setup_ui(self):
         self.setWindowTitle("Create Excel File")
@@ -46,11 +44,13 @@ class CreateExcelView(QWidget):
 
         self.setLayout(vb)
 
+        # print(self.btn_create.sizeHint())
+        # print(self.btn_create.sizePolicy())
+
         # button clicked event example
         self.btn_browse.clicked.connect(self.browse_test)
         self.btn_clear.clicked.connect(self.clear_test)
         self.btn_create.clicked.connect(self.create_test)
-        # self.btn_create.clicked.connect(self.message_box)
         self.btn_cancel.clicked.connect(self.cancel_test)
 
         self.show()
@@ -62,11 +62,8 @@ class CreateExcelView(QWidget):
         self.move(fg.topLeft())
 
     def message_box(self):
-        msg = QMessageBox()
-        msg.setWindowTitle("Successful")
-        msg.setText("<font size = 3 > Excel Created Complete </font>")
-        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Open)
-        self.retval = msg.exec_()
+        msgbox = QMessageBox(self)
+        msgbox.about(self, "Successful", "Save Complete!")
 
     def browse_test(self):
         print("Select a directory")
@@ -75,6 +72,7 @@ class CreateExcelView(QWidget):
         print("Clear the directory")
 
     def create_test(self):
+        # self.message_box()
         print("Save Excel File")
 
     def cancel_test(self):
