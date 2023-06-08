@@ -1,4 +1,3 @@
-
 from PySide2.QtWidgets import *
 from PySide2 import QtGui, QtCore
 

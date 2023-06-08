@@ -85,7 +85,7 @@ class ExcelCreater:
 
             exr_last_file = OpenEXR.InputFile(exr)
             last_meta = exr_last_file.header()
-            # print(f"333=={start_meta}, 444=={last_meta}")
+            print(f"333=={start_meta}, 444=={last_meta}")
             
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
 
