@@ -31,7 +31,7 @@ class LoadConvertModel:
         self.type = []
         self.just_in = []
         self.just_out = []
-        # self.resolution = []
+        self.resolution = []
         self.ext = []
         self.start_frame = []
         self.end_frame = []
@@ -105,6 +105,9 @@ class LoadConvertModel:
 
         if len(self.sequence) == 0:
             self.sequence = sequence_list
+        else:
+            self.sequence = None
+            self.sequence = sequence_list
 
         print('---------------------------------sequence information---------------------------------')
         pprint(self.sequence)
@@ -134,7 +137,7 @@ class LoadConvertModel:
             self.type = data['type']
             self.just_in = str(data['just_in'])
             self.just_out = str(data['just_out'])
-            # self.resolution = str(data['resolution'])
+            self.resolution = str(data['resolution'])
             self.ext = data['ext']
             self.start_frame = str(data['start_frame'])
             self.end_frame = str(data['end_frame'])
@@ -154,7 +157,7 @@ class LoadConvertModel:
                     'sg_just_in': self.just_in,
                     'sg_just_out': self.just_out,
                     'sg_shot_type': self.type,
-                    # 'sg_resolution': self.resolution,
+                    'sg_resolution': self.resolution,
                     'sg_ext': self.ext,
                     'sg_start_frame': self.start_frame,
                     'sg_end_frame': self.end_frame,
@@ -173,6 +176,9 @@ class LoadConvertModel:
                 print(f"Shot '{shot_code}' already exists. Skipping creation.")
 
         if len(self.shot) == 0:
+            self.shot = shot_list
+        else:
+            self.shot = None
             self.shot = shot_list
 
         print('---------------------------------shot information---------------------------------')
