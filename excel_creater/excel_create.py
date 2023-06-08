@@ -78,13 +78,17 @@ class ExcelCreate:
             exr_start_file = OpenEXR.InputFile(exr)
             start_meta = exr_start_file.header()
 
-            exr_last_file = OpenEXR.InputFile(exr)
+            lsat = self.last_file_list[i]
+            exr_last_file = OpenEXR.InputFile(lsat)
             last_meta = exr_last_file.header()
 
             file_data = re.match(r"(.*/)([^/]+)\.(\d+)\.(\w+)$", exr)
 
-            res = re.findall(r'\d+\d+', str(start_meta.get("dataWindow")))
+            res = re.findall(r'\d+\d+', str(start_meta.get("displayWindow")))
             resolutions = list(map(lambda x: str(int(x) + 1), res))
+
+            start_timecode = re.search(r"time: (\d+:\d+:\d+:\d+)", str(start_meta.get("timeCode")))
+            last_timecode = re.search(r"time: (\d+:\d+:\d+:\d+)", str(last_meta.get("timeCode")))
 
             frames = re.findall(r'\d+\.\d+|\d+', str(start_meta.get("framesPerSecond")))
 
@@ -93,14 +97,13 @@ class ExcelCreate:
                     "scan_path": file_data.group(1),
                     "scan_name": file_data.group(2),
                     "clip_name": start_meta.get("interim.clip.cameraClipName"),
-                    "pad": '%0' + str(len(file_data.group(3))) + 'd',
                     "ext": file_data.group(4),
                     "resolutions": ' x '.join(resolutions),
                     "start_frame": int(frames[1]),
                     "and_frame": int(frames[0]),
                     "duration": int(frames[0]) - int(frames[1]) + 1,
-                    "timecode_in": start_meta.get("arriraw/timeCode"),
-                    "timecode_out": last_meta.get("arriraw/timeCode"),
+                    "timecode_in": start_timecode.group(1),
+                    "timecode_out": last_timecode.group(1),
                     "framerate": float(frames[2]),
                     "date": start_meta.get("capDate"),
                 }
@@ -143,7 +146,7 @@ class ExcelCreate:
             self.ws.cell(row=row, column=8, value=meta.get("scan_path"))
             self.ws.cell(row=row, column=9, value=meta.get("scan_name"))
             self.ws.cell(row=row, column=10, value=meta.get("clip_name"))
-            self.ws.cell(row=row, column=11, value=meta.get("pad"))
+
             self.ws.cell(row=row, column=12, value=meta.get("ext"))
             self.ws.cell(row=row, column=13, value=meta.get("resolutions"))
             self.ws.cell(row=row, column=14, value=meta.get("start_frame"))
@@ -175,11 +178,7 @@ class ExcelCreate:
 def main():
     ec = ExcelCreate()
 
-    # setter test info
-    ec.input_path = r"/TD/show/hanjin/production/scan/20221017_plate_scan"
-
-    ec.excel_create()
-
+    # ec.excel_create()
 
 if __name__ == '__main__':
     main()
