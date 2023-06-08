@@ -43,7 +43,6 @@ class MyController:
         self._shot_view = self.view.shot_view
         self._shot_view.header().setDefaultSectionSize(180)
         self._shot_view.setModel(self._shot_model)
-        self.importData(data)
         self._shot_view.expandAll()
 
         self.set_project_combobox()
@@ -64,30 +63,6 @@ class MyController:
         # self.view.convert_btn.clicked.connect(self.set_excel_save)
         # self._shot_view.setAlternatingRowColors(True)
         # self._shot_view.header().setVisible(False)
-
-    def importData(self, data, root=None):
-        self._shot_model.setRowCount(0)
-        if root is None:
-            root = self._shot_model.invisibleRootItem()
-        seen = {}   # List of  QStandardItem
-        values = deque(data)
-        while values:
-            value = values.popleft()
-            if value['unique_id'] == 1:
-                parent = root
-            else:
-                pid = value['parent_id']
-                if pid not in seen:
-                    values.append(value)
-                    continue
-                parent = seen[pid]
-            unique_id = value['unique_id']
-            parent.appendRow([
-                QStandardItem(value['short_name']),
-                QStandardItem(value['height']),
-                QStandardItem(value['weight'])
-            ])
-            seen[unique_id] = parent.child(parent.rowCount() - 1)
 
     def set_project_combobox(self):
         """
@@ -128,10 +103,13 @@ class MyController:
 
         self.set_shots()
 
+    def selected_shot(self, event):
+        pass
+
     def set_shots(self):
         # project = self._project_combo_model
         # print(project)
-        seqs, shots = self.model.scan_org_copy(self._project_combo_view.currentText())
+        seqs, shots, path = self.model.scan_org_copy(self._project_combo_view.currentText())
         # for shot in shots:
         #     shot_name = shot['code']
         #     print(shot_name)
@@ -143,6 +121,8 @@ class MyController:
         # model.setStringList(items)
         print(seqs)
         print(shots)
+        print(path)
+
         # for i in seqs:
         #     seq_item = QTreeView(self._shot_view)
         #     seq_item.(0, i)
@@ -154,7 +134,6 @@ class MyController:
             # self._shot_model.setStringList(shot)
             # self._shot_model._data_list.append(shot)
             # self._shot_view.(shot)
-
             # self._shot_model.data.append(shot)
 
     def set_org_copy(self):
@@ -183,18 +162,5 @@ def main():
 
 
 if __name__ == "__main__":
-
-    data = [
-        {'unique_id': 1, 'parent_id': 0, 'short_name': '', 'height': ' ', 'weight': ' '},
-        {'unique_id': 2, 'parent_id': 1, 'short_name': 'Class 1', 'height': ' ', 'weight': ' '},
-        {'unique_id': 3, 'parent_id': 2, 'short_name': 'Lucy', 'height': '162', 'weight': '50'},
-        {'unique_id': 4, 'parent_id': 2, 'short_name': 'Joe', 'height': '175', 'weight': '65'},
-        {'unique_id': 5, 'parent_id': 1, 'short_name': 'Class 2', 'height': ' ', 'weight': ' '},
-        {'unique_id': 6, 'parent_id': 5, 'short_name': 'Lily', 'height': '170', 'weight': '55'},
-        {'unique_id': 7, 'parent_id': 5, 'short_name': 'Tom', 'height': '180', 'weight': '75'},
-        {'unique_id': 8, 'parent_id': 1, 'short_name': 'Class 3', 'height': ' ', 'weight': ' '},
-        {'unique_id': 9, 'parent_id': 8, 'short_name': 'Jack', 'height': '178', 'weight': '80'},
-        {'unique_id': 10, 'parent_id': 8, 'short_name': 'Tim', 'height': '172', 'weight': '60'}
-    ]
 
     main()
