@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 import platform
-from excel_create_uitest import ExcelCreate
+from excel_create_ui_test import ExcelCreate
 
 # import OpenEXR
 from PySide2.QtWidgets import *
