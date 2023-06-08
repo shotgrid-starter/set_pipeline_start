@@ -1,5 +1,10 @@
 import sys
+import os
+import subprocess
+import platform
+from excel_create_ui_test import ExcelCreate
 
+# import OpenEXR
 from PySide2.QtWidgets import *
 from PySide2 import QtGui
 
@@ -9,12 +14,12 @@ class CreateExcelView(QWidget):
     def __init__(self):
         super().__init__()
         self.setup_ui()
-        self.retval = None
-
+        # OpenEXR.InputFile('/TD/show/hanjin/production/scan/20221017_plate_scan/001_C140C022_220304_WOFX/C140C022_220304_WOFX.0001001.exr')
+        self.model = ExcelCreate()
 
     def setup_ui(self):
         self.setWindowTitle("Create Excel File")
-        self.resize(400, 100)
+        self.resize(600, 200)
         self.center()
 
         # create widgets
@@ -22,39 +27,29 @@ class CreateExcelView(QWidget):
 
         hbtop = QHBoxLayout()
         vb.addLayout(hbtop)
-        self.line_dir_path = QLineEdit()
+        self.line_path = QLineEdit()
         self.btn_browse = QPushButton("Browse")
-        self.btn_clear = QPushButton("Clear")
-        self.btn_clear.setMaximumSize(60, 23)
-        hbtop.addWidget(self.line_dir_path)
+        hbtop.addWidget(self.line_path)
         hbtop.addWidget(self.btn_browse)
-        hbtop.addWidget(self.btn_clear)
-
-        hbmid = QHBoxLayout()
-        vb.addLayout(hbmid)
-        self.label_save_path = QLabel("Save Directory")
-        hbmid.addWidget(self.label_save_path)
 
         hbbot = QHBoxLayout()
         vb.addLayout(hbbot)
-        self.btn_create = QPushButton("Create")
-        self.btn_create.setMaximumSize(200, 30)
+        hbbot.addStretch()
+        self.btn_create = QPushButton("Create Excel")
         self.btn_cancel = QPushButton("Cancel")
-        self.btn_cancel.setMaximumSize(200, 30)
+        self.btn_msg = QPushButton("msg")
         hbbot.addWidget(self.btn_create)
         hbbot.addWidget(self.btn_cancel)
+        hbbot.addWidget(self.btn_msg)
+        hbbot.addStretch()
 
         self.setLayout(vb)
 
-        # print(self.btn_create.sizeHint())
-        # print(self.btn_create.sizePolicy())
-
         # button clicked event example
         self.btn_browse.clicked.connect(self.browse_test)
-        self.btn_clear.clicked.connect(self.clear_test)
         self.btn_create.clicked.connect(self.create_test)
-        # self.btn_create.clicked.connect(self.message_box)
         self.btn_cancel.clicked.connect(self.cancel_test)
+        self.btn_msg.clicked.connect(self.message_box)
 
         self.show()
 
@@ -71,18 +66,18 @@ class CreateExcelView(QWidget):
         msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Open)
         self.retval = msg.exec_()
 
+        if self.retval == QMessageBox.Open :
+            subprocess.Popen(['gio', 'open', self.model.excel_path])
+
     def browse_test(self):
         print("Select a directory")
-
-    def clear_test(self):
-        print("Clear the directory")
 
     def create_test(self):
         # self.message_box()
         print("Save Excel File")
 
     def cancel_test(self):
-        print("Close widget")
+        print("Clear")
 
 
 if __name__ == '__main__':
