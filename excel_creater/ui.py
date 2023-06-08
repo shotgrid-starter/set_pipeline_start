@@ -46,9 +46,6 @@ class CreateExcelView(QWidget):
 
         self.setLayout(vb)
 
-        # print(self.btn_create.sizeHint())
-        # print(self.btn_create.sizePolicy())
-
         # button clicked event example
         self.btn_browse.clicked.connect(self.browse_test)
         self.btn_clear.clicked.connect(self.clear_test)
@@ -78,7 +75,6 @@ class CreateExcelView(QWidget):
         print("Clear the directory")
 
     def create_test(self):
-        # self.message_box()
         print("Save Excel File")
 
     def cancel_test(self):

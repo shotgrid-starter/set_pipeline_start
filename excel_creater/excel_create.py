@@ -178,9 +178,6 @@ class ExcelCreate:
 def main():
     ec = ExcelCreate()
 
-    # setter test info
-    # ec.input_path = r"/TD/show/hanjin/production/scan/20221017_plate_scan"
-    #
     # ec.excel_create()
 
 if __name__ == '__main__':
