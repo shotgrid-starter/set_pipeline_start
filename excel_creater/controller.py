@@ -1,9 +1,9 @@
 import sys
 import subprocess
 
-from excel_create import ExcelCreate
 from PySide2.QtWidgets import *
 
+from excel_create import ExcelCreate
 from ui import CreateExcelView
 
 
