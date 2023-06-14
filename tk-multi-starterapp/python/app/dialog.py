@@ -56,6 +56,7 @@ class AppDialog(QtGui.QWidget):
         # now load in the UI that was created in the UI designer
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.ui.main_stack.setCurrentIndex(0)
 
         self.api_1 = ExcelCreate()
         # self.api_2 = LoadConvertModel()
