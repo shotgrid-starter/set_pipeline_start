@@ -44,11 +44,13 @@ class MyModel(QStringListModel):
         shots = sg.get_all_shots(project)
         shot_codes = []
         seq_name = []
+        copy_path = []
         for shot in shots:
             shot_name = shot['code']
             shot_codes.append(shot_name)
             seq_name = shot['sg_sequence']['name']
             org_path = f'/show/{project}/seq/{seq_name}/{shot_name}/plate/org/'
+            copy_path.append(org_path)
             # print(org_path)
         # shots_scan_path = sorted(list(set([shot['sg_scan_path'] for shot in shots])))
         # print(0, shots_scan_path)
@@ -57,14 +59,7 @@ class MyModel(QStringListModel):
         # for ai in a:
         #     print(ai)
 
-        return seq_name, shot_codes
+        return seq_name, shot_codes, copy_path
 
-
-# def main():
-#     project = 'seine'
-#     data = MyModel()
-#     data.scan_org_copy(project)
-#
-#
-# if __name__ == '__main__':
-#     main()
+    def get_shot_path(self):
+        pass
