@@ -216,7 +216,7 @@ class LoadConvertModel:
                         shutil.copy2(source_path, target_path)
 
             else:
-                work_path = os.path.join(self.home_root, self.project.get('name'), 'seq', seq_name, shot_name, 'plate')
+                work_path = os.path.join(self.home_root, self.project.get('name'), 'sequence', seq_name, shot_name, 'plate')
                 org_path = os.path.join(work_path, 'org')
                 self.work_root.append(work_path)
                 self.org_root.append(org_path)
