@@ -27,6 +27,7 @@ class LoadConvertModel:
         self.shot = None
         self.version = None
 
+        self.version_num = []
         self.scan_path = []
         self.type = []
         self.just_in = []
@@ -135,8 +136,9 @@ class LoadConvertModel:
         for one_shot in self.shot:
             existing_shot_codes.add(one_shot.get('code'))
 
-        for index, data in enumerate(self.xlsx_data):
+        for data in self.xlsx_data:
             shot_code = data['shot_name']
+            self.version_num = data['version']
             self.scan_path = data['scan_path']
             self.type = data['type']
             self.just_in = str(data['just_in'])
@@ -170,7 +172,7 @@ class LoadConvertModel:
                     'sg_timecode_out': self.timecode_out,
                     'sg_framerate': self.framerate,
                     'sg_date': self.date,
-
+                    'sg_version_number': self.version_num,
                     'project': {'type': 'Project', 'id': project_id}  # Replace with the actual project ID
                 }
                 new_shot = self.sg.create('Shot', shot_data)
@@ -184,7 +186,7 @@ class LoadConvertModel:
                         ['project', 'is', {'type': 'Project', 'id': project_id}],
                         ['sg_sequence', 'is', {'type': 'Sequence', 'id': sequence_id}],
                     ]
-                    fields = ['id', 'code', 'sg_shot_type', 'sg_sequence', 'sg_scan_path', 'sg_ext']
+                    fields = ['id', 'code', 'sg_shot_type', 'sg_sequence', 'sg_scan_path', 'sg_ext', 'sg_version_number']
                     self.shot = self.sg.find('Shot', filters, fields)
                 print(f"Shot '{shot_code}' already exists. Skipping creation.")
 
@@ -196,6 +198,10 @@ class LoadConvertModel:
         print('----------------------------------------------------------------------------------')
 
     def copy_file_action(self):
+        proj_name = self.project.get('name')
+        proj_name = proj_name.upper()
+        proj_name = proj_name[:3]
+
         for shot_info in self.shot:
             shot_type = shot_info.get('sg_shot_type')
             scan_file_path = shot_info.get('sg_scan_path')
@@ -204,8 +210,13 @@ class LoadConvertModel:
             seq_name = shot_info.get('sg_sequence').get('name')
             shot_name = shot_info.get('code')
 
+            ver_num = shot_info.get('sg_version_number')
+            version_name = f'v{ver_num:03d}'
+
             if shot_type != 'org':
-                another_path = os.path.join(self.home_root, self.project.get('name'), shot_type)
+                another_path = os.path.join(self.home_root, self.project.get('name'), 'sequences', seq_name, shot_name,
+                                            'plate', version_name, shot_type)
+
                 if not os.path.exists(another_path):
                     os.makedirs(another_path)
 
@@ -216,20 +227,21 @@ class LoadConvertModel:
                         shutil.copy2(source_path, target_path)
 
             else:
-                work_path = os.path.join(self.home_root, self.project.get('name'), 'sequence', seq_name, shot_name, 'plate')
+                work_path = os.path.join(self.home_root, self.project.get('name'), 'sequences', seq_name, shot_name, 'plate', version_name)
                 org_path = os.path.join(work_path, 'org')
-                self.work_root.append(work_path)
-                self.org_root.append(org_path)
 
                 if not os.path.exists(org_path):
                     os.makedirs(org_path)
+
+                self.work_root.append(work_path)
+                self.org_root.append(org_path)
 
                 for orig_file_name in scan_file_list:
                     hash_num = orig_file_name.split('_')
                     hash_num = hash_num[-1].split('.')
                     convert_num = hash_num[-2].lstrip('0')
 
-                    new_orig_name = f"{seq_name}_{shot_name}_{convert_num}.{shot_info.get('sg_ext')}"
+                    new_orig_name = f"{proj_name}_{seq_name}_{shot_name}_{version_name}_{convert_num}.{shot_info.get('sg_ext')}"
 
                     source_path = os.path.join(scan_file_path, orig_file_name)
                     target_path = os.path.join(org_path, new_orig_name)
@@ -238,8 +250,14 @@ class LoadConvertModel:
 
     def jpg_file_action(self):
         self.copy_file_action()
+
+        proj_name = self.project.get('name')
+        proj_name = proj_name.upper()
+        proj_name = proj_name[:3]
+
         for dir_index, org_dir in enumerate(self.org_root):
             org_dir_path = os.listdir(org_dir)
+
             for origin_file in org_dir_path:
                 jpg_dir_path = os.path.join(self.work_root[dir_index], 'jpg')
 
@@ -250,9 +268,12 @@ class LoadConvertModel:
                 hash_num = hash_num[-1].split('.')
                 convert_num = hash_num[-2].lstrip('0')
 
+                ver_num = self.shot[dir_index].get('sg_version_number')
+                version_name = f'v{ver_num:03d}'
+
                 exr_file = os.path.join(self.org_root[dir_index], origin_file)
                 jpg_file = os.path.join(jpg_dir_path,
-                                        f"{self.shot[dir_index].get('sg_sequence').get('name')}_{self.shot[dir_index].get('code')}_{convert_num}.jpg")
+                                        f"{proj_name}_{self.shot[dir_index].get('sg_sequence').get('name')}_{self.shot[dir_index].get('code')}_{version_name}_{convert_num}.jpg")
 
                 if not os.path.exists(jpg_file):
                     ffmpeg_cmd = f"ffmpeg -i {exr_file} {jpg_file}"
@@ -271,6 +292,7 @@ class LoadConvertModel:
             jpg_file = jpg_file_list[dir_index]
             jpg_file_name = os.path.splitext(jpg_file)[0]
             mp4_file = '_'.join(jpg_file_name.split('_')[:-1])
+
             jpg_path = os.path.join(jpg_file_path, f'{mp4_file}_%04d.jpg')
             mp4_file_path = os.path.join(mp4_path, f'{mp4_file}.mp4')
 
@@ -287,6 +309,10 @@ class LoadConvertModel:
         self.mp4_file_action()
         project_id = self.project.get('id')
 
+        proj_name = self.project.get('name')
+        proj_name = proj_name.upper()
+        proj_name = proj_name[:3]
+
         for seq in self.sequence:
             sequence_id = seq.get('id')
             filters = [
@@ -294,13 +320,16 @@ class LoadConvertModel:
                 ['sg_sequence', 'is', {'type': 'Sequence', 'id': sequence_id}],
                 ['sg_shot_type', 'is', 'org']
             ]
-            fields = ['id', 'code', 'sg_shot_type', 'sg_sequence', 'sg_scan_path', 'sg_ext']
+            fields = ['id', 'code', 'sg_shot_type', 'sg_sequence', 'sg_scan_path', 'sg_ext', 'sg_version_number']
             self.shot = self.sg.find('Shot', filters, fields)
 
         for index, shot_info in enumerate(self.shot):
             shot_id = shot_info.get('id')
             shot_name = shot_info.get('code')
             seq_name = shot_info.get('sg_sequence').get('name')
+
+            ver_num = shot_info.get('sg_version_number')
+            version_name = f'v{ver_num:03d}'
 
             filters = [["entity", "is", {"type": "Shot", "id": shot_id}]]
             fields = ['id', 'code', 'sg_uploaded_movie', 'sg_status_list', 'sg_version_type', 'sg_path_to_movie']
@@ -310,7 +339,7 @@ class LoadConvertModel:
                 version_data = {
                     'project': {'type': 'Project', 'id': project_id},
                     'entity': {'type': 'Shot', 'id': shot_id},
-                    'code': seq_name + '_' + shot_name,
+                    'code': f'{proj_name}_{seq_name}_{shot_name}_{version_name}',
                     'sg_status_list': 'na',
                     'sg_version_type': 'org',
                     'sg_path_to_movie': self.mp4_file_path_list[index],
@@ -319,7 +348,7 @@ class LoadConvertModel:
             else:
                 print(f" Version '{self.version.get('code')}' already exists. Skipping creation.")
 
-            mp4file_name = seq_name + shot_name + '.mp4'
+            mp4file_name = f'{proj_name}_{seq_name}_{shot_name}_{version_name}.mp4'
 
             uploaded_movie = self.version.get('sg_uploaded_movie')
             if uploaded_movie is None or uploaded_movie.get('name') != mp4file_name:
@@ -333,7 +362,7 @@ class LoadConvertModel:
 
 def main():
     test = LoadConvertModel()
-    test.set_file_path('/TD/show/excel/hanjin.xlsx')
+    test.set_file_path('/TD/show/hanjin/production/excel/shots_list/hanjin.xlsx')
     test.data_info()
     test.get_project('hanjin')
     test.get_sequence_and_upload()
