@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ShotGrid Publish</string>
+   <string>IO Manageer</string>
   </property>
   <property name="accessibleName">
    <string>publish dialog</string>
@@ -126,7 +126,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QToolButton" name="toolButton">
+              <widget class="QToolButton" name="browse_button">
                <property name="text">
                 <string>Browse</string>
                </property>
@@ -245,7 +245,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../../../../TD/dongjin/projects/configs/install/app_store/tk-multi-publish2/v2.6.4/resources/resources.qrc"/>
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>
