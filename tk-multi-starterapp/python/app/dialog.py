@@ -38,7 +38,7 @@ def show_dialog(app_instance):
 
     # we pass the dialog class to this method and leave the actual construction
     # to be carried out by toolkit.
-    app_instance.engine.show_dialog("Starter Template App...", app_instance, AppDialog)
+    app_instance.engine.show_dialog("IO Manager", app_instance, AppDialog)
 
 
 class AppDialog(QtGui.QWidget):
@@ -73,13 +73,9 @@ class AppDialog(QtGui.QWidget):
         # - A Shotgun API instance, via self._app.shotgun
         # - An Sgtk API instance, via self._app.sgtk
 
-        # lastly, set up our very basic UI
-        # self.ui.context.setText("Current Context: %s" % self._app.context)
-
         # excel_create
         self.ui.ui1_button_2.clicked.connect(self.create_excel)
-        # self.ui.btn_browse.clicked.connect(self.btn_browse_clicked)
-        # self.ui.btn_clear.clicked.connect(self.btn_clear_clicked)
+        self.ui.btn_clear.clicked.connect(self.btn_clear_clicked)
         # self.ui.btn_create.clicked.connect(self.btn_create_clicked)
         # self.ui.btn_create.clicked.connect(self.save_folder_open)
         self.ui.btn_cancel.clicked.connect(self.btn_cancel_clicked)
@@ -90,11 +86,6 @@ class AppDialog(QtGui.QWidget):
         # convert
         self.ui.ui2_button_2.clicked.connect(self.convert)
 
-        # for project in self.api_2.all_project:
-        #     self.ui.combo_box.addItem(project)
-        #
-        # self.selected_xlsx = ''
-        # self.selected_project = ''
         #
         # self.ui.combo_box.currentIndexChanged.connect(self.combo_box_changed)
         # self.ui.browse_button.clicked.connect(self.browse_clicked)
@@ -102,21 +93,74 @@ class AppDialog(QtGui.QWidget):
         self.ui.cancel_button.clicked.connect(self.btn_cancel_clicked)
 
 
+        # browse file action
+        self._browse_file_action = QtGui.QAction(self)
+        self._browse_file_action.setText("Select Excel File")
+        self._browse_file_action.triggered.connect(
+            lambda: self._on_browse(folders=False)
+        )
+
+        # browse folder action
+        self._browse_folder_action = QtGui.QAction(self)
+        self._browse_folder_action.setText("Select Directory")
+        self._browse_folder_action.triggered.connect(
+            lambda: self._on_browse(folders=True)
+        )
+
+        # drop area browse button. Note, not using the actions created above
+        # because making the buttons look right when they're using he action's
+        # text/icon proved difficult. Instead, the button text/icon are defined
+        # in the designer file. So as a note, if you want to change the text or
+        # icon, you'll need to do it above and in designer.
+
+        self.ui.toolButton.clicked.connect(
+            lambda: self._on_browse(folders=False)
+        )
+        self.ui.btn_browse.clicked.connect(
+            lambda: self._on_browse(folders=True)
+        )
+
+    def _on_browse(self, folders=False):
+
+        # options for either browse type
+        options = [
+            QtGui.QFileDialog.DontResolveSymlinks,
+            QtGui.QFileDialog.DontUseNativeDialog,
+        ]
+
+        if folders:
+            # browse folders specifics
+            caption = "Select Directory"
+            file_mode = QtGui.QFileDialog.Directory
+            options.append(QtGui.QFileDialog.ShowDirsOnly)
+        else:
+            # browse files specifics
+            caption = "Select Excel File"
+            file_mode = QtGui.QFileDialog.ExistingFiles
+
+        # create the dialog
+        file_dialog = QtGui.QFileDialog(parent=self, caption=caption)
+        file_dialog.setFileMode(file_mode)
+        file_dialog.setDirectory('/TD/show')
+
+        self.ui.line_dir_path.setText(file_dialog.getExistingDirectory())
+
+        # set the appropriate options
+        for option in options:
+            file_dialog.setOption(option)
+
+        # browse!
+        if not file_dialog.exec_():
+            return
+
     def create_excel(self):
         self.ui.main_stack.setCurrentIndex(2)
 
     def convert(self):
         self.ui.main_stack.setCurrentIndex(1)
 
-    # def btn_browse_clicked(self):
-    #     dialog = QFileDialog()
-    #     dialog.setDirectory('/TD/show')
-    #     dir_path = dialog.getExistingDirectory()
-    #     self.line_dir_path.setText(dir_path)
-    #     self.api_1.input_path = dir_path
-
-    # def btn_clear_clicked(self):
-    #     self.line_dir_path.clear()
+    def btn_clear_clicked(self):
+        self.ui.line_dir_path.clear()
 
     # def btn_create_clicked(self):
     #     self.api_1.excel_create()
